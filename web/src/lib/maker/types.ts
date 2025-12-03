@@ -20,6 +20,15 @@ export interface StepResult {
   rawResponse: string;
 }
 
+export interface WorldModel<S, M> {
+  applyMove(state: S, move: M): S;
+  validateMove(state: S, move: M): boolean;
+  isSolved(state: S): boolean;
+  stateToString(state: S): string;
+  moveToString(move: M): string;
+  parseMove(response: string, currentState: S): Promise<StepResult | null> | StepResult | null;
+}
+
 export interface VoteResult {
   winner: StepResult | null;
   candidates: StepResult[];

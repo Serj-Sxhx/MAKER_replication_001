@@ -10,6 +10,7 @@ export type ResponseParser = (response: string) => StepResult | null;
 
 export type VotingEvent = 
   | { type: 'vote_cast'; candidate: StepResult | null; raw: string; voteCount: number }
+  | { type: 'vote_rejected'; raw: string; reason: string; voteCount: number }
   | { type: 'vote_progress'; total: number; leader: string; leaderVotes: number; secondVotes: number; margin: number }
   | { type: 'decision'; result: StepResult; reason: string };
 
@@ -33,18 +34,24 @@ export async function* solveStepWithVotingGenerator(
     // Always increment total attempts
     totalVotes++;
     
-    // Yield vote cast even if invalid (red flag)
+    if (!result) {
+        // Red-flagged
+        yield {
+            type: 'vote_rejected',
+            raw: response.content,
+            reason: 'Invalid format or illegal move',
+            voteCount: totalVotes
+        };
+        continue;
+    }
+
+    // Yield valid vote cast
     yield { 
         type: 'vote_cast', 
         candidate: result, 
         raw: response.content, 
         voteCount: totalVotes 
     };
-
-    if (!result) {
-        // Red-flagged
-        continue;
-    }
 
     const key = JSON.stringify({ move: result.move, state: result.nextState });
     

@@ -1,4 +1,6 @@
-import { solveHanoi } from '@/lib/maker/solver';
+import { solveProblem } from '@/lib/maker/solver';
+import { HanoiWorld } from '@/lib/hanoi/hanoi-world';
+import { getInitialState } from '@/lib/hanoi/hanoi-problem';
 
 export const runtime = 'nodejs'; // Use node runtime for OpenAI
 export const maxDuration = 300; // 5 minutes max
@@ -11,11 +13,21 @@ export async function POST(req: Request) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const generator = solveHanoi({ 
-            numDisks: Math.min(numDisks, 10), // Safety cap
-            k, 
-            maxVotes 
-        });
+        // 1. Instantiate the World Model
+        const cappedDisks = Math.min(numDisks, 10); // Safety cap
+        const world = new HanoiWorld(cappedDisks);
+        const initialState = getInitialState(cappedDisks);
+
+        // 2. Run the Generic Solver
+        const generator = solveProblem(
+            world,
+            initialState,
+            { 
+                numDisks: cappedDisks,
+                k, 
+                maxVotes 
+            }
+        );
 
         for await (const event of generator) {
           // Send event as SSE format
@@ -40,4 +52,3 @@ export async function POST(req: Request) {
     },
   });
 }
-

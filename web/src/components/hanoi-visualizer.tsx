@@ -49,68 +49,40 @@ export function HanoiVisualizer({ state, numDisks }: HanoiVisualizerProps) {
         <div className="absolute bottom-0 left-10 right-10 h-4 bg-slate-800 rounded-full" />
 
         {[0, 1, 2].map((pegId) => (
-          <div key={pegId} className="relative flex flex-col items-center justify-end w-1/3 h-full group">
-            {/* Peg Pole */}
+          <div key={pegId} className="relative flex flex-col-reverse items-center justify-start w-1/3 h-full z-20 pb-4 group">
+            {/* Peg Pole (Absolute Background) */}
             <div className="absolute bottom-0 w-4 h-[300px] bg-amber-700 rounded-t-lg z-0" />
             
             {/* Drop Zone Highlight (Optional) */}
             <div className="absolute bottom-0 w-full h-[320px] bg-transparent z-10" />
-            
-            {/* Disks for this Peg */}
-            {/* We render them here to stack them properly */}
-            <div className="flex flex-col-reverse items-center justify-start z-20 w-full mb-4"> 
-               {/* flex-col-reverse because row 0 is bottom */}
-               {/* Actually, mapping absolute positions might be smoother for framer-motion */}
-            </div>
-          </div>
-        ))}
 
-        {/* Render Disks Absolutely to animate transitions across pegs */}
-        {tiles.map((tile) => {
-            // Calculate Position
-            // Column 0 is ~16%, Column 1 ~50%, Column 2 ~83%
-            // But we have flex containers.
-            // Using Framer Motion layoutId might be easiest if structure matches.
-            // But structure changes (parent changes).
-            // `layout` prop in Framer Motion handles parent changes automatically!
-            
-            // We need to render them inside the correct column for `layout` to work naturally, 
-            // OR use absolute coordinates.
-            // Let's try rendering them INSIDE the columns above.
-            return null; 
-        })}
-        
-        {/* Re-implementing with disks inside columns for layout animation */}
-        {[0, 1, 2].map((pegId) => (
-             <div key={pegId} className="relative flex flex-col-reverse items-center w-1/3 h-full z-20 pb-4">
-                {/* Filter tiles for this peg */}
-                {tiles
-                  .filter(t => t.column === pegId)
-                  .sort((a, b) => b.size - a.size) // Larger first? No, we use flex-col-reverse, so first element is bottom. 
-                  // In stack [3, 2, 1], 3 is bottom.
-                  // We want 3 to be at bottom of visual stack.
-                  // flex-col-reverse: Item 1 is at bottom.
-                  // So we want [3, 2, 1] order. 
-                  .map((tile) => (
-                    <motion.div
-                      layoutId={tile.id}
-                      key={tile.id}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className={cn(
-                        "h-8 rounded-md shadow-sm border border-black/10",
-                        getDiskColor(tile.size, numDisks)
-                      )}
-                      style={{
-                        width: `${(tile.size / numDisks) * 100}%`,
-                        maxWidth: '90%',
-                        minWidth: '20%'
-                      }}
-                    >
-                        <span className="hidden">{tile.size}</span>
-                    </motion.div>
-                  ))
-                }
-             </div>
+            {/* Disks (Flex Items, Z-Index High) */}
+            {tiles
+                .filter(t => t.column === pegId)
+                .sort((a, b) => b.size - a.size) // Sort so smallest is at end of array (top of visual stack in flex-col-reverse? No.)
+                // Stack: [3, 2, 1]. 3 is bottom.
+                // flex-col-reverse renders last element at TOP.
+                // So we want order [3, 2, 1] -> 1 is last -> 1 is Top. Correct.
+                .map((tile) => (
+                <motion.div
+                    layoutId={tile.id}
+                    key={tile.id}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className={cn(
+                    "h-8 rounded-md shadow-sm border border-black/10 z-20",
+                    getDiskColor(tile.size, numDisks)
+                    )}
+                    style={{
+                    width: `${(tile.size / numDisks) * 100}%`,
+                    maxWidth: '90%',
+                    minWidth: '20%'
+                    }}
+                >
+                    <span className="hidden">{tile.size}</span>
+                </motion.div>
+                ))
+            }
+          </div>
         ))}
       </div>
     </div>

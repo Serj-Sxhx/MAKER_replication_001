@@ -134,6 +134,15 @@ export default function Home() {
                     details: vData,
                     timestamp: Date.now()
                 }]);
+            } else if (vData.type === 'vote_rejected') {
+                setLogs(prev => [...prev, {
+                    id: Math.random().toString(36),
+                    step: event.step,
+                    type: 'error',
+                    title: `Red Flag: ${vData.reason}`,
+                    details: { raw: vData.raw, count: vData.voteCount },
+                    timestamp: Date.now()
+                }]);
             } else if (vData.type === 'vote_progress') {
                 // Update a progress bar? Or just log.
             }
@@ -175,6 +184,9 @@ export default function Home() {
                     <div>
                         <h2 className="text-2xl font-light text-slate-800">Towers of Hanoi</h2>
                         <p className="text-sm text-slate-500">Massively Decomposed Agentic Process (MDAP) Demo</p>
+                        <p className="text-sm text-slate-500">Objective: Rebuild the tower in the third column in as little moves as possible
+                        </p>
+                        <p className="text-sm text-slate-500">Instructions: Move one tile at a time, bigger tiles cannot go on top of smaller tiles</p>
                     </div>
                     
                     <div className="flex items-center gap-2">
