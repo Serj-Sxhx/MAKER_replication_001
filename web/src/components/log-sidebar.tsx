@@ -41,9 +41,9 @@ export function LogSidebar({ logs, className }: LogSidebarProps) {
       <div className="p-4 border-b bg-slate-50">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Terminal className="w-5 h-5" />
-          System Internals
+          System Interpretability Logs
         </h2>
-        <p className="text-xs text-muted-foreground">Real-time MDAP process log</p>
+        <p className="text-xs text-muted-foreground">Real-time MDAP process</p>
       </div>
 
       <div className="flex-1 relative min-h-0 overflow-hidden" ref={scrollRef}>
@@ -108,8 +108,8 @@ function LogItem({ log }: { log: LogEntry }) {
         </div>
 
         {isOpen && log.details && (
-            <div className="mt-3 pt-2 border-t text-xs font-mono bg-slate-50 p-2 rounded overflow-x-auto">
-                <pre>{JSON.stringify(log.details, null, 2)}</pre>
+            <div className="mt-3 pt-2 border-t text-xs font-mono bg-slate-50 p-2 rounded overflow-hidden">
+                <pre className="whitespace-pre-wrap break-all">{JSON.stringify(log.details, null, 2)}</pre>
             </div>
         )}
       </div>
