@@ -46,19 +46,21 @@ export function LogSidebar({ logs, className }: LogSidebarProps) {
         <p className="text-xs text-muted-foreground">Real-time MDAP process log</p>
       </div>
 
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        <div className="space-y-4">
-          {logs.length === 0 && (
-            <div className="text-center text-muted-foreground py-10 text-sm">
-              Ready to initialize...
+      <div className="flex-1 relative min-h-0 overflow-hidden" ref={scrollRef}>
+        <ScrollArea className="h-full w-full p-4">
+            <div className="space-y-4">
+            {logs.length === 0 && (
+                <div className="text-center text-muted-foreground py-10 text-sm">
+                Ready to initialize...
+                </div>
+            )}
+            
+            {logs.map((log) => (
+                <LogItem key={log.id} log={log} />
+            ))}
             </div>
-          )}
-          
-          {logs.map((log) => (
-            <LogItem key={log.id} log={log} />
-          ))}
-        </div>
-      </ScrollArea>
+        </ScrollArea>
+      </div>
     </div>
   );
 }
